@@ -48,6 +48,7 @@ module CharTrie (
     where
       insertList' :: [Word] -> Trie -> Trie
       insertList' (h:t) trie = insertList' t (insert h trie)
+      insertList' [] trie = trie
 
   search :: Word -> Trie -> Bool
   search "" trie   = False
