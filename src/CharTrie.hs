@@ -62,7 +62,26 @@ module CharTrie (
             False
 
   getWords :: Trie -> [Word]
-  getWords = undefined
+  getWords trie = scanDepth "" [] trie
+    where
+      scanDepth :: String -> [Word] -> Trie -> [Word]
+      scanDepth passed words trie = foldl (\acc el -> acc ++ (fetch el) ++ (traverse el)) words (M.toList $ children trie)
+        where
+          fetch :: (Char, Trie) -> [Word]
+          fetch (char, trie) =
+            case end trie of
+              True  ->
+                [passed ++ [char]]
+              False ->
+                []
+
+          traverse :: (Char, Trie) -> [Word]
+          traverse (char, trie) =
+            case trie == empty of
+              True  ->
+                []
+              False ->
+                scanDepth (passed ++ [char]) [] trie
 
   prefix :: Word -> Trie -> Maybe [Word]
   prefix = undefined
