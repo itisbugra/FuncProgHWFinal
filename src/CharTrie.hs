@@ -84,4 +84,10 @@ module CharTrie (
                 scanDepth (passed ++ [char]) [] trie
 
   prefix :: Word -> Trie -> Maybe [Word]
-  prefix = undefined
+  prefix word trie = 
+    case prefix' word trie of
+      []  -> Nothing
+      any -> Just any
+    where
+      prefix' :: Word -> Trie -> [Word]
+      prefix' word trie = filter (\el -> word `isPrefixOf` el) (getWords trie)
