@@ -12,14 +12,15 @@ main = do
 
 agent :: IO ()
 agent = do
-  CLI.printManifest
   args <- getArgs
   case length args of
     1 -> do
       words <- readWords $ head args
+      CLI.printManifest
       loop $ CharTrie.insertList words
       return ()
     _ -> do
+      hPutStrLn stderr $ "== usage: ./main file_name"
       return ()
 
 loop :: CharTrie.Trie -> IO CharTrie.Trie
