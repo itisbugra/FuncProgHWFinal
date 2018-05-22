@@ -40,7 +40,6 @@ module CharTrie (
               trie { end = (end trie), children = M.insert h (insert' t $ element) contained }
             Nothing -> 
               trie { end = (end trie), children = M.insert h (insert' t $ empty) contained }
-      
 
   insertList :: [Word] -> Trie
   insertList list =
