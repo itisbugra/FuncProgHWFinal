@@ -49,7 +49,17 @@ module CharTrie (
       insertList' (h:t) trie = insertList' t (insert h trie)
 
   search :: Word -> Trie -> Bool
-  search = undefined
+  search "" trie   = False
+  search word trie = search' word trie
+    where
+      search' :: Word -> Trie -> Bool
+      search' [] trie = end trie
+      search' (h:t) trie =
+        case M.lookup h $ children trie of
+          Just element ->
+            search' t $ element
+          Nothing ->
+            False
 
   getWords :: Trie -> [Word]
   getWords = undefined
