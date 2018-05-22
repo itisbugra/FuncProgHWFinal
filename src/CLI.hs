@@ -86,6 +86,8 @@ module CLI (
   printStringList (h:t) = do
     putStrLn h
     printStringList t
+  printStringList [] = do
+    return ()
 
   printManifest :: IO ()
   printManifest = do
