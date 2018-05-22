@@ -10,6 +10,7 @@ module CharTrie (
 ) where
   import qualified Data.Map as M
   import Data.Maybe
+  import Data.List hiding (insert)
   import System.Environment
   import Prelude hiding (Word)
 
