@@ -17,7 +17,7 @@ module CLI (
   manifest = "a) Add word \ns) Search word \nf) Find words with prefix \np) Print all words \ne) Exit"
 
   ask :: String
-  ask = "Enter the action:"
+  ask = "  Enter the action:"
 
   convertAction :: Char
                 -> Maybe Action
@@ -42,30 +42,44 @@ module CLI (
   doAction :: Action -> CharTrie.Trie -> IO CharTrie.Trie
   doAction Add trie = do
     wordOrPrefix <- promptWordOrPrefix
-    return $ CharTrie.insert wordOrPrefix trie
+    let newTrie = CharTrie.insert wordOrPrefix trie
+    putStrLn $ ">> Word \"" ++ wordOrPrefix ++ "\" is added to the glossary."
+    return newTrie
   doAction Search trie = do
     word <- promptWord
-    let exists = CharTrie.search word trie
-    return trie
+    case CharTrie.search word trie of
+      True -> do
+        putStrLn $ ">> Word \"" ++ word ++ "\" found in glossary."
+        return trie
+      False -> do
+        putStrLn $ ">> Word \"" ++ word ++ "\" not found in glossary."
+        return trie
   doAction PrefixQuery trie = do
     prefix <- promptPrefix
-    let word = CharTrie.prefix prefix trie
-    return trie
+    case CharTrie.prefix prefix trie of
+      Just words -> do
+        printStringList words
+        putStrLn $ ">> " ++ (show (length words)) ++ " words found at total."
+        return trie
+      Nothing -> do
+        hPutStrLn stderr $ "== error: no strings found with given prefix \"" ++ prefix ++ "\"."
+        return trie
   doAction Print trie = do
     printStringList $ CharTrie.getWords trie
+    putStrLn $ ">> " ++ (show $ length $ CharTrie.getWords trie) ++ " words found at total."
     return trie
   doAction Exit trie = do
     exitSuccess
     return trie
   
   askWordOrPrefix :: String
-  askWordOrPrefix = "Enter word/prefix:"
+  askWordOrPrefix = "  Enter word/prefix:"
 
   askWord :: String
-  askWord = "Enter word:"
+  askWord = "  Enter word:"
 
   askPrefix :: String
-  askPrefix = "Enter prefix:"
+  askPrefix = "  Enter prefix:"
 
   promptWordOrPrefix :: IO String
   promptWordOrPrefix = prompt askWordOrPrefix
@@ -83,11 +97,14 @@ module CLI (
     return input
 
   printStringList :: [String] -> IO ()
-  printStringList (h:t) = do
-    putStrLn h
-    printStringList t
-  printStringList [] = do
-    return ()
+  printStringList list = printStringList' list 1
+    where 
+      printStringList' :: [String] -> Integer -> IO ()
+      printStringList' (h:t) i = do
+        putStrLn $ "  " ++ (show i) ++ ". \"" ++ h ++ "\""
+        printStringList' t $ i + 1
+      printStringList' [] i = do
+        return ()
 
   printManifest :: IO ()
   printManifest = do
